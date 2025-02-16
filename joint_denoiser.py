@@ -190,10 +190,6 @@ def plot_evaluations(
     denoiser.train(False)
     focuser.train(False)
 
-    print('masking:')
-    print('black -> hide')
-    print('white -> keep')
-
     with torch.no_grad():
         images, _ = next(iter(test_loader))
         images = images.view(-1, 784)

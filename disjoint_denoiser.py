@@ -109,7 +109,7 @@ def train_denoiser(epochs: int, batch_size: int, learning_rate: float, noise_fac
             total_loss += loss.item()
 
         avg_loss = total_loss / len(train_loader)
-        print(f'Epoch [{epoch+1}/{epochs}], Average Loss: {avg_loss:.4f}')
+        print(f'Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}')
 
     return model
 
@@ -183,10 +183,6 @@ def plot_evaluations(
     focuser.train(False)
     denoiser.train(False)
 
-    print("masking:")
-    print("black -> hide")
-    print("white -> keep")
-
     with torch.no_grad():
         images, _ = next(iter(test_loader))
         images = images.view(-1, 784)
@@ -248,6 +244,43 @@ def plot_evaluations(
         plt.savefig(filename)
 
 
+def plot_masks(focuser: Focuser, samples: int, filename: str):
+    plt.figure(figsize=(25, 10))
+
+    for i in range(samples):
+        img = focuser.masks[i].view(28, 28).cpu()
+        plt.subplot(1, samples, i + 1)
+        plt.imshow(img, cmap='gray')
+        plt.axis('off')
+
+    plt.tight_layout()
+    plt.savefig(filename)
+
+
+def measure_models_difference(denoiser: Denoiser, focuser: Focuser, noise_factor: float) -> float:
+    test_mnist_dataset = datasets.MNIST(
+        root='./data', train=False, download=True, transform=transforms.ToTensor()
+    )
+    test_loader = DataLoader(test_mnist_dataset, batch_size=256, shuffle=True)
+    focuser.train(False)
+    denoiser.train(False)
+
+    difference = 0
+
+    for images, _ in test_loader:
+        images = images.view(-1, 784)
+        noisy_images = add_gaussian_noise(images, noise_factor).to(device)
+        merged_masks = focuser(noisy_images)
+
+        denoised_images = denoiser(noisy_images)
+        denoised_masked_images = denoiser(noisy_images * merged_masks)
+
+        difference += F.mse_loss(denoised_images, denoised_masked_images)
+
+    difference /= len(test_loader)
+    return difference
+
+
 def main():
     denoiser = train_denoiser(
         epochs=10,
@@ -268,5 +301,16 @@ def main():
         focuser,
         samples=10,
         noise_factor=0.3,
-        filename='evaluation.png'
+        filename='evaluations.png'
     )
+    plot_masks(
+        focuser,
+        samples=10,
+        filename='masks.png'
+    )
+    diff = measure_models_difference(denoiser, focuser, noise_factor=0.3)
+    print(f"MSE(f(x), f(m(x))): {diff}")
+
+
+if __name__ == '__main__':
+    main()
