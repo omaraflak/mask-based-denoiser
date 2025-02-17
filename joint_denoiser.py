@@ -162,10 +162,8 @@ def train_models(
 
 def plot_losses(losses: dict[str, list[float]], filename: str):
     plt.figure(figsize=(15, 10))
-    plt.plot(losses['total'], label='Total Loss')
-    plt.plot(losses['denoise'], label='Denoise Loss')
-    plt.plot(losses['unmask'], label='Unmask Loss')
-    plt.plot(losses['regularizer'], label='Regularizer Loss')
+    for name, loss in losses.items():
+        plt.plot(loss, label=name)
     plt.xlabel('Iterations')
     plt.ylabel('Loss')
     plt.legend()
