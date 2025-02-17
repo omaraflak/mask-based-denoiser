@@ -1,4 +1,4 @@
 torch
 torchvision
-numpy
+numpy<2
 matplotlib
