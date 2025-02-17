@@ -5,7 +5,6 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
-import itertools
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
