@@ -204,6 +204,7 @@ def plot_evaluations(
         # Plot results
         plt.figure(figsize=(15, 10))
         plt.title("white: keep, black: remove")
+        plt.axis('off')
 
         for i in range(samples):
             # Noisy
