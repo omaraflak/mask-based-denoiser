@@ -205,6 +205,8 @@ def plot_evaluations(
 
         # Plot results
         plt.figure(figsize=(15, 10))
+        plt.title("white: keep, black: remove")
+
         for i in range(samples):
             # Noisy
             plt.subplot(5, samples, i + 1)
@@ -246,7 +248,6 @@ def plot_evaluations(
                 plt.title('f(m(x, 0))')
 
         plt.tight_layout()
-        plt.title("white: keep, black: remove")
         plt.savefig(filename)
 
 
@@ -264,6 +265,7 @@ def plot_masks(focuser: Focuser, samples: int, filename: str):
 
 
 def main():
+    print("Training denoiser and focuser...")
     denoiser, focuser, losses = train_models(
         epochs=10,
         batch_size=256,
@@ -272,6 +274,7 @@ def main():
         temperature=0.1,
         noise_factor=0.3
     )
+    print("Building plots...")
     plot_losses(losses, filename='losses.png')
     plot_evaluations(
         denoiser,

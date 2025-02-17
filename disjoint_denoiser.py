@@ -199,6 +199,8 @@ def plot_evaluations(
 
         # Plot results
         plt.figure(figsize=(15, 10))
+        plt.title('white: keep, black: remove')
+
         for i in range(samples):
             # Noisy
             plt.subplot(5, samples, i + 1)
@@ -239,7 +241,6 @@ def plot_evaluations(
                 plt.title('f(m(x))')
 
         plt.tight_layout()
-        plt.title('white: keep, black: remove')
         plt.savefig(filename)
 
 
@@ -281,12 +282,14 @@ def measure_models_difference(denoiser: Denoiser, focuser: Focuser, noise_factor
 
 
 def main():
+    print("Training denoiser...")
     denoiser = train_denoiser(
         epochs=10,
         batch_size=256,
         learning_rate=0.001,
         noise_factor=0.3
     )
+    print("Training focuser...")
     focuser = train_focuser(
         denoiser,
         epochs=10,
@@ -295,6 +298,7 @@ def main():
         temperature=0.1,
         noise_factor=0.3
     )
+    print("Building plots...")
     plot_evaluations(
         denoiser,
         focuser,
@@ -307,8 +311,9 @@ def main():
         samples=10,
         filename='masks.png'
     )
+    print("Measuring models difference...")
     diff = measure_models_difference(denoiser, focuser, noise_factor=0.3)
-    print(f"MSE(f(x), f(m(x))): {diff}")
+    print(f"MSE(denoiser(x), denoiser(focuser(x))): {diff}")
 
 
 if __name__ == '__main__':
