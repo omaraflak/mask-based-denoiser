@@ -21,4 +21,4 @@ Thus, we train the neural network `f` on the original task to predict `y` from `
 
 We experiment with this idea with a toy MNIST example.
 
-[image!](https://raw.githubusercontent.com/omaraflak/mask-based-denoiser/refs/heads/main/evaluations.png)
+![image](https://raw.githubusercontent.com/omaraflak/mask-based-denoiser/refs/heads/main/evaluations.png)
