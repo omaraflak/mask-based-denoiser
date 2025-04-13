@@ -1,5 +1,4 @@
-data/
+.gitignoredata/
 .venv/
-evaluations.png
 losses.png
 masks.png
